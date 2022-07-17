@@ -68,7 +68,6 @@ namespace YerbaFrontEnd.Controllers
             ProductDto model = JsonConvert.DeserializeObject<ProductDto>(Convert.ToString(response.Result));
             return View(model);
 
-            return NotFound();
         }
 
 

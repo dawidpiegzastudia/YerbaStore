@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using YerbaFrontEnd.Serivces;
 using YerbaFrontEnd.Serivces.IServices;
 
@@ -27,6 +28,27 @@ namespace YerbaFrontEnd
             services.AddScoped<IProductService, ProductService>();
 
             services.AddControllersWithViews();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+                .AddCookie("Cookies", c => c.ExpireTimeSpan = TimeSpan.FromMinutes(10))
+                .AddOpenIdConnect("oidc", options =>
+                {
+                    options.Authority = Configuration["ServiceUrls:Identity"];
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.ClientId = "yerba";
+                    options.ClientSecret = "secret";
+                    options.ResponseType = "code";
+
+                    options.TokenValidationParameters.NameClaimType = "name";
+                    options.TokenValidationParameters.RoleClaimType = "role";
+                    options.Scope.Add("yerba");
+                    options.SaveTokens = true;
+
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +68,8 @@ namespace YerbaFrontEnd
             app.UseStaticFiles();
 
             app.UseRouting();
+
+                         app.UseAuthentication();
 
             app.UseAuthorization();
 
