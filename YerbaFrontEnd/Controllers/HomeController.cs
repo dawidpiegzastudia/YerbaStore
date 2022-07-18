@@ -39,7 +39,7 @@ namespace YerbaFrontEnd.Controllers
 
         public IActionResult Logout()
         {
-            return SignOut("Cookies", "iodc");
+            return SignOut("Cookies", "oidc");
         }
     }
 }
